@@ -1,0 +1,141 @@
+<?php
+
+session_start();
+
+require 'db_connect.php';
+
+function test_input($data) {
+   $data = trim($data);
+   $data = stripslashes($data);
+   $data = htmlspecialchars($data);
+   return $data;
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+   
+	if (empty($_POST['username'])) {
+     $usernameErr = "username is required";
+    } else {
+     $username = test_input($_POST['username']);
+	}
+	
+	if (empty($_POST['password'])) {
+     $passwordErr = "password is required";
+    } else {
+     $password = test_input($_POST['password']);
+    }
+}
+
+$query = "SELECT * FROM users where username = '$username' AND password = '$password'";
+ 
+// checks if username and password exits
+$result = mysql_query($query);
+
+// if exists, logs user in.
+if (mysql_num_rows($result) > 0)  
+{ 
+	// sets the username as the session variable as username
+	$_SESSION['username'] = $username;
+	// redirects to the next page
+	header('location: session1.php');
+} 
+
+// if username is correct but password isn't, the password is incorrect.
+else
+{	
+	$query2 = "SELECT * FROM users where username = '$username'";
+	if($result = mysql_query($query2))
+	{
+		echo "The password is incorrect, please try again.", "<br>", "<br>";
+		echo "<a href=login.html>Click here to try again</a>";
+	}
+		else
+		{
+			$sql="INSERT INTO users (username, password) VALUES ('$username','$password')";
+			if (!mysql_query($sql,$con))
+			{
+				die('Error: ' . mysql_error());
+			} 
+			else 
+			{
+			// echo "1 record added";
+			// begins the session with the username sent over
+			$_SESSION['username'] = $username;
+			// redirects to the next page after the user is accepted as new
+			header('location: session1.php');
+			}
+		}
+}
+
+// closes the connection
+mysql_close($con);
+
+
+?>
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title></title>
+
+<style>
+
+#validUser{
+color:red;
+}
+
+#validPwd{
+color:red;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<p>Login<p>
+
+<form name="loginForm" id="" onsubmit="return validateForm()" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+<input type="text" id="username" name="username"> Username
+<span id="validUser"></span><br>
+<input type="password" id="password" name="password"> Password
+<span id="validPwd"></span><br><br>
+<input type="submit" id="submit" name="submit" value="Submit">
+</form>
+
+<script>
+
+// makes sure the page is fully loaded so it won't break any scripts
+// also - placing at the end of the code allows the page to load even
+// if scripts are taking a while.
+function fullyLoaded(){
+
+	// form validation - checks if the field is empty and returns an error message
+	document.getElementById("submit").onclick = function(){
+		var x = document.forms["loginForm"]["username"].value;
+		if (x==null || x=="") {
+			document.getElementById("validUser").innerHTML = "Please enter a valid User Name";
+			return false;
+		}
+		var y = document.forms["loginForm"]["password"].value;
+		if (y==null || y=="") {
+			document.getElementById("validPwd").innerHTML = "Please enter a valid Password";
+			return false;
+		}
+	};
+}
+
+// when the page is fully loaded, it'll go to the fullyLoaded function for javascript
+window.onload = function(){
+	fullyLoaded();
+}
+
+</script>
+
+</body>
+
+</html>
