@@ -1,6 +1,7 @@
 <?php
 
-require '/requires/u_auth.php';
+require './requires/u_auth.php';
+require './requires/db_connect.php';
 
 // upload a file
 
@@ -26,43 +27,43 @@ if(isset($_POST['submit'])){
 	print_r($_FILES['file_upload']);
 	echo "</pre>";
 	echo "<hr />";
+        //echo "File successfully uploaded";
 
 	$tmp_file = $_FILES['file_upload']['tmp_name'];
 	// basename makes sure only get name of file at the end
-	// of path.  It also helps insure system doesn't get 
+	// of path.  It also helps insure system doesn't get
 	// hacked by a crazy filename
 	$target_file = basename($_FILES['file_upload']['name']);
 	$upload_dir = "uploads";
 	$exists = $upload_dir.'/'.$target_file;
 
-	// file_exists() makes sure there isn't already a file by 
+	// file_exists() makes sure there isn't already a file by
 	// the same name
-	
+
 	if (file_exists($exists)){
 		$message = "Sorry, a file by that name exists already.";
 	} else{
-	
+
 	// move_uploaded_file = php function to move file
 	// move_uploaded file will return false if $tmp_file is
-	// not a valid upload or if it cannot be moved for any 
+	// not a valid upload or if it cannot be moved for any
 	// other reason
 		if(move_uploaded_file($tmp_file, $upload_dir."/".$target_file)){
-			// inserts the file's location - not the file itself - 
+			// inserts the file's location - not the file itself -
 			// into the database to be used later for processing
 			$filename = $upload_dir."/".$target_file;
 			$username = $_SESSION['username'];
-			require '/requires/db_connect.php';
 			$sql = "INSERT INTO photos (username, filename, fileloc) VALUES ('$username', '$target_file', '$filename')";
-			mysql_query($sql, $connect) or die ('Could not connect to database' . mysql_error());
-			mysql_close($connect);
+			mysqli_query($sql, $connect) or error_log('Could not connect to database');
 			// user feedback
 			$message = "File successfully uploaded.";
 		} else{
 			$error = $_FILES['file_upload']['error'];
 			$message = $upload_errors[$error];
-		}	
+		}
 	}
 }
+
 
 ?>
 
@@ -77,5 +78,19 @@ if(isset($_POST['submit'])){
 <input type="file" name="file_upload">
 <input type=submit name=submit value=Upload>
 </form>
+
+<a href='index.php'>Index</a><br>
+
+<?php
+$username = $_SESSION['username'];
+$query_photo = "select * from photos where username = '$username'";
+$result = mysql_query($query_photo) or error_log("Error retrieving photos");
+while($row = mysql_fetch_array($result)){
+    $retrieved_path = $row['fileloc'];
+    $retrieved_file = $row['filename'];
+    echo "<img src='$retrieved_path' width=300 height=200>";
+}
+mysql_close($connect);
+?>
 </body>
 </html>

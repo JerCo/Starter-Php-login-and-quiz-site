@@ -1,26 +1,9 @@
 <?php
 if (isset($_POST['qname'])){
-	$hostname = "localhost";
-	$username = "root";
-	$password = "tech123";
 
-	$connect = mysql_connect($hostname, $username, $password) or die ("Could not connect.  " . mysql_error());
+	require './requires/db_connect.php';
+        require './requires/valid_data.php';
 
-	mysql_select_db("cms", $connect);
-	
-	// data validation function
-	function test_input($data) {
-		// strip whitespace from beginning or end of string
-		$data = trim($data);
-		// allows apostrophes to be entered in data without a \
-		$data = mysql_real_escape_string($data);
-		//$data = addslashes($data);
-		//$data = stripslashes($data);
-		// convert to special chars to html entities
-		$data = htmlspecialchars($data);
-		return $data;
-   }
-	
 	// validates submitted data by calling the test_input function
 	// and stores in variables
 	$qname = test_input($_POST['qname']);
@@ -30,20 +13,20 @@ if (isset($_POST['qname'])){
 	$answer3 = test_input($_POST['answer3']);
 	$answer4 = test_input($_POST['answer4']);
 	$correct = test_input($_POST['correct']);
-	
+
 	$selquery = "select * from quiznames where qname='$qname'";
-	$selresult = mysql_query($selquery, $connect);
-	
+	$selresult = mysqli_query($connect, $selquery);
+
 	// makes a separate list of quiznames to select from later
-	if (mysql_num_rows($selresult) == 0){
+	if (mysqli_num_rows($selresult) == 0){
 		$updquery = "insert into quiznames (qname) values ('$qname')";
-		$updresult = mysql_query($updquery, $connect) or die ("Could not add the quiz name" . mysql_error());
-	} 
-	
+		$updresult = mysqli_query($connect, $updquery) or error_log("Could not add the quiz name");
+	}
+
 	$query = "insert into quizzes (qname,question,answer1,answer2,answer3,answer4,correct) VALUES ('$qname','$question','$answer1','$answer2','$answer3','$answer4','$correct')";
-	$result = mysql_query($query, $connect) or die ("Could not insert the question.  " . mysql_error());
-	mysql_close($connect);
-   
+	$result = mysqli_query($connect, $query) or error_log("Could not insert the question");
+	mysqli_close($connect);
+
 }
 ?>
 <html>

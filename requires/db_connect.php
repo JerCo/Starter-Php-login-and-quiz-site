@@ -1,10 +1,11 @@
 <?php
 $hname = "localhost";
-$uname = "username";
+$uname = "root";
 $pword = "password";
+$dname = "cms";
 
-$connect = mysql_connect($hname, $uname, $pword) or die ("Could not connect to database" . mysql_error());
+$connect = mysqli_connect($hname, $uname, $pword, $dname) or error_log("Could not connect to database");
 
-$db = "cms";
-mysql_select_db($db, $connect);
+//$db = "cms";
+//mysqli_select_db($db, $connect);
 ?>

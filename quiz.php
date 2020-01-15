@@ -1,26 +1,20 @@
 <?php
-$hostname = "localhost";
-$username = "root";
-$password = "tech123";
+require './requires/db_connect.php';
 
-$connect = mysql_connect($hostname,$username,$password) or die("Could not connect." . mysql_error());
-
-mysql_select_db("cms", $connect);
-
-$qname = 'quiz1';
+$qname = 'first';
 //$qname = $_GET['qname'];
 
 $query = "SELECT * from quizzes WHERE qname='$qname'";
 
-$result = mysql_query($query, $connect) or die("Error selecting the data." . mysql_error());
+$result = mysqli_query($connect, $query) or error_log("Error selecting the data.");
 
 $qnum = 0;
 
 echo "<form name=form1>";
 
-while($row = mysql_fetch_array($result)) 
+while($row = mysqli_fetch_array($result))
 {
-		$id = $row['id']; 
+		$id = $row['id'];
 		$qnum = $qnum + 1;
 		$qname = $row['qname'];
 		$question = $row['question'];
@@ -29,44 +23,44 @@ while($row = mysql_fetch_array($result))
 		$answer3 = $row['answer3'];
 		$answer4 = $row['answer4'];
 		$correct = $row['correct'];
-		
+
 		if($correct == $answer1){
 			$val1 = 1;
 		} else{
 			$val1 = 0;
 		}
-		
+
 		if($correct == $answer2){
 			$val2 = 1;
 		} else{
 			$val2 = 0;
 		}
-		
+
 		if($correct == $answer3){
 			$val3 = 1;
 		} else{
 			$val3 = 0;
 		}
-		
+
 		if($correct == $answer4){
 			$val4 = 1;
 		} else{
 			$val4 = 0;
 		}
-		
+
 		//echo $qname, "<br>", "<br>";
 		echo $qnum, ". ", $question, "<br>", "<br>";
-		
+
 		echo "<input type=radio name='num$qnum' value=$val1 onclick=checkAnswer('num$qnum','feedback$qnum')>" , $answer1, "<br>";
 		echo "<input type=radio name='num$qnum' value=$val2 onclick=checkAnswer('num$qnum','feedback$qnum')>" , $answer2, "<br>";
 		echo "<input type=radio name='num$qnum' value=$val3 onclick=checkAnswer('num$qnum','feedback$qnum')>" , $answer3, "<br>";
 		echo "<input type=radio name='num$qnum' value=$val4 onclick=checkAnswer('num$qnum','feedback$qnum')>" , $answer4, "<br>", "<br>";
 		echo "<div id='feedback$qnum'></div>", "<br>";
-} 
+}
 
 echo "</form>";
 
-mysql_close($connect);
+mysqli_close($connect);
 
 ?>
 <html>
@@ -104,6 +98,7 @@ document.getElementById(fback).innerHTML = "Please choose an answer.";
 <body>
 
 <div id=feedback></div>
+<a href=index.php>Go to Index</a>
 
 </body>
 </html>

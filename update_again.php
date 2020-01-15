@@ -1,24 +1,20 @@
 <?php
 
-$hostname = "localhost";
-$username = "root";
-$password = "tech123";
+require './requires/db_connect.php';
+require './requires/valid_data.php';
 
-$connect = mysql_connect($hostname,$username,$password);
-
-mysql_select_db("cms", $connect) or die("Could not connect." . mysql_error());
-
-echo $_POST['updid'];
+//echo test_input($_POST['updid']);
 
 if (isset($_POST['title']) && $_POST['article'])
 	{
-		$updtitle = $_POST['title'];
-		$updid = $_POST['updid'];
-		$updarticle = $_POST['article'];
-		$upquery="UPDATE articles SET title='$updtitle', article='$updarticle' WHERE id='$updid'";
-		$upresult = mysql_query($upquery) or die("Problem with update:" . mysql_error());
+		$updtitle = test_input($_POST['title']);
+		$updid = test_input($_POST['updid']);
+		$updarticle = test_input($_POST['article']);
+		$upquery="UPDATE articles SET title='$updtitle', article='$updarticle' WHERE id=$updid";
+		echo $upquery;
+		$upresult = mysqli_query($connect, $upquery) or error_log("Problem with update:");
 	}
-	
-mysql_close($connect);
+
+mysqli_close($connect);
 header('location:article.php');
 ?>

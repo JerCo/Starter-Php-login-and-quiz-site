@@ -1,6 +1,10 @@
 <?php
 
-require '/requires/u_auth.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require './requires/u_auth.php';
 
 if (isset($_GET['clear']) && $_GET['clear'] == 'true'){
 	$file = './logs/log.txt';
@@ -31,6 +35,7 @@ echo "<hr />";
 //echo "<hr/>";
 
 echo "<a href='read_log.php?clear=true'>Clear Logs</a><br>";
-echo "<a href=index.php>Go to Index</a>";
+echo "<a href=index.php>Go to Index</a><br>";
+echo "<a href=cms.php>Go to CMS</a><br>";
 
 ?>

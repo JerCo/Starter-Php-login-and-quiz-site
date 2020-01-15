@@ -1,21 +1,16 @@
 <?php
-$hostname = "localhost";
-$username = "root";
-$password = "tech123";
 
-$connect = mysql_connect($hostname,$username,$password) or die("Could not connect." . mysql_error());
-
-mysql_select_db("cms", $connect);
+require './requires/db_connect.php';
 
 $qname = 'quiz1';
 
 $query = "SELECT * from quizzes WHERE qname='$qname'";
 
-$result = mysql_query($query, $connect) or die("Error selecting the data." . mysql_error());
+$result = mysqli_query($query, $connect) or error_log("Error selecting the data.");
 
-while($row = mysql_fetch_array($result)) 
+while($row = mysqli_fetch_array($result))
 {
-		$id = $row['id']; 
+		$id = $row['id'];
 		echo $qname = $row['qname'], "<br>", "<br>";
 		echo $question = $row['question'], "<br>";
 		echo "<form name=form1>";
@@ -26,7 +21,7 @@ while($row = mysql_fetch_array($result))
 		echo "</form>";
 } 
 
-mysql_close($connect);
+mysqli_close($connect);
 ?>
 <html>
 <head>
